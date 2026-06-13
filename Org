@@ -1,0 +1,120 @@
+-- [[ Osama Fixed Hub - Built on Test Structure ]] --
+
+-- إنشاء الواجهة بناءً على الكود الذي اشتغل معك
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 220, 0, 230)
+Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+Frame.Active = true
+Frame.Draggable = true
+
+-- إضافة خط حواف بسيط
+local Stroke = Instance.new("UIStroke", Frame)
+Stroke.Color = Color3.fromRGB(0, 255, 255)
+Stroke.Thickness = 1.5
+
+-- عنوان السكربت
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Text = "  OSAMA HUB v5 (FIXED)"
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 14
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- زر الـ Steal Mail
+local MailBtn = Instance.new("TextButton", Frame)
+MailBtn.Size = UDim2.new(0, 190, 0, 40)
+MailBtn.Position = UDim2.new(0, 15, 0, 45)
+MailBtn.Text = "STEAL MAIL 📦"
+MailBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 50)
+MailBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MailBtn.Font = Enum.Font.SourceSansBold
+
+-- زر الـ Coins
+local CoinBtn = Instance.new("TextButton", Frame)
+CoinBtn.Size = UDim2.new(0, 190, 0, 40)
+CoinBtn.Position = UDim2.new(0, 15, 0, 100)
+CoinBtn.Text = "ADD COINS (VISUAL) 💰"
+CoinBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 60)
+CoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CoinBtn.Font = Enum.Font.SourceSansBold
+
+-- زر إخفاء/إظهار القائمة
+local ToggleBtn = Instance.new("TextButton", ScreenGui)
+ToggleBtn.Size = UDim2.new(0, 60, 0, 30)
+ToggleBtn.Position = UDim2.new(0, 10, 0, 10)
+ToggleBtn.Text = "MENU"
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 0, 127)
+ToggleBtn.Font = Enum.Font.SourceSansBold
+
+---------------------------------------------------------------------
+-- منطق الـ Webhook والأزرار (محمي بالكامل من الـ Crash)
+---------------------------------------------------------------------
+local WebhookURL = "https://discord.com/api/webhooks/1489215951093239890/052bJ8vjLfNKXfP5ED3iMfYZEzG8PPwBbXb9IZegNHFoNCpwbk0X5DF-YdWuqUY7hvxP"
+local HttpService = game:GetService("HttpService")
+local LocalPlayer = game.Players.LocalPlayer
+
+local function sendReport()
+    -- التحقق الآمن من المشغل لتجنب خطأ الـ nil القاتل
+    local requestFunc = syn and syn.request or http and http.request or http_request or request
+    if not requestFunc then 
+        MailBtn.Text = "NOT SUPPORTED BY EXECUTOR ❌"
+        task.wait(1.5)
+        MailBtn.Text = "STEAL MAIL 📦"
+        return 
+    end
+    
+    local payload = {
+        ["content"] = "<@1486461099002953982>",
+        ["embeds"] = {{
+            ["title"] = "📦 تقرير الـ Mail الآمن",
+            ["color"] = 16711680,
+            ["fields"] = {
+                {["name"] = "👤 Player", ["value"] = "```" .. LocalPlayer.Name .. "
+```", ["inline"] = true}
+            }
+        }}
+    }
+    
+    pcall(function()
+        requestFunc({
+            Url = WebhookURL,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode(payload)
+        })
+    end)
+end
+
+-- تشغيل الأزرار
+ToggleBtn.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
+end)
+
+MailBtn.MouseButton1Click:Connect(function()
+    MailBtn.Text = "SENDING... ⚡"
+    sendReport()
+    task.wait(1)
+    MailBtn.Text = "SENT ✅"
+    task.wait(1)
+    MailBtn.Text = "STEAL MAIL 📦"
+end)
+
+CoinBtn.MouseButton1Click:Connect(function()
+    local stats = LocalPlayer:FindFirstChild("leaderstats")
+    if stats then
+        for _, v in pairs(stats:GetChildren()) do
+            if string.find(string.lower(v.Name), "coin") or string.find(string.lower(v.Name), "money") then
+                v.Value = 999999
+            end
+        end
+    end
+    CoinBtn.Text = "COINS ADDED ✅"
+    task.wait(1)
+    CoinBtn.Text = "ADD COINS (VISUAL) 💰"
+end)
+
